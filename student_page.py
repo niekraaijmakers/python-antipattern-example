@@ -3,7 +3,6 @@ ANTI-PATTERN EXAMPLE - STUDENT DATA PAGE
 This file demonstrates TERRIBLE practices:
 - Mixing HTML, CSS, JavaScript, and SQL in one file
 - No separation of concerns
-- SQL injection vulnerabilities
 - Inline styles everywhere
 - Repetitive code
 - No proper error handling
@@ -18,7 +17,7 @@ import sqlite3
 from flask import request
 
 def render_student_page():
-    # ANTI-PATTERN: SQL injection vulnerability!
+    # ANTI-PATTERN: Getting parameters directly in page rendering function
     search = request.args.get('search', '')
     filter_major = request.args.get('major', '')
     
@@ -26,7 +25,7 @@ def render_student_page():
     conn = sqlite3.connect("students.db")
     c = conn.cursor()
     
-    # ANTI-PATTERN: String concatenation for SQL queries - SQL INJECTION!
+    # ANTI-PATTERN: Building queries in the page rendering function
     if search:
         query = "SELECT * FROM students WHERE name LIKE '%" + search + "%'"
     elif filter_major:

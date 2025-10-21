@@ -3,7 +3,6 @@ ANTI-PATTERN EXAMPLE - GRADES PAGE
 This file demonstrates TERRIBLE practices:
 - Everything mixed together (HTML, CSS, JS, SQL, Python)
 - No MVC pattern
-- SQL injection vulnerabilities
 - Massive inline styles and scripts
 - No code reuse
 - Hardcoded database queries
@@ -17,7 +16,7 @@ import sqlite3
 from flask import request
 
 def render_grades_page():
-    # ANTI-PATTERN: More SQL injection vulnerabilities!
+    # ANTI-PATTERN: Getting parameters directly in page rendering function
     student_filter = request.args.get('student', '')
     course_filter = request.args.get('course', '')
     semester_filter = request.args.get('semester', '')
@@ -26,7 +25,7 @@ def render_grades_page():
     conn = sqlite3.connect("students.db")
     c = conn.cursor()
     
-    # ANTI-PATTERN: Building SQL with string concatenation
+    # ANTI-PATTERN: Building complex queries in the view function
     query = "SELECT g.id, g.student_id, s.name, g.course, g.grade, g.semester, g.credits FROM grades g JOIN students s ON g.student_id = s.id WHERE 1=1"
     
     if student_filter:
