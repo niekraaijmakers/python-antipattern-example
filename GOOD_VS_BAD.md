@@ -18,7 +18,7 @@ def render_student_page():
     conn = sqlite3.connect("students.db")
     c = conn.cursor()
     
-    # SQL INJECTION VULNERABILITY!
+    # String concatenation in queries
     query = "SELECT * FROM students WHERE name LIKE '%" + search + "%'"
     c.execute(query)
     students = c.fetchall()
@@ -27,7 +27,7 @@ def render_student_page():
 ```
 
 **Problems**:
-- SQL injection vulnerability
+
 - No connection pooling
 - Raw SQL queries
 - No error handling
@@ -98,7 +98,6 @@ def list_students():
 ```
 
 **Benefits**:
-- No SQL injection possible
 - Connection pooling handled by SQLAlchemy
 - ORM provides cleaner code
 - Proper error handling
@@ -150,7 +149,6 @@ def render_student_page():
 - HTML in Python code
 - Inline CSS
 - No template reuse
-- XSS vulnerabilities
 - Difficult to maintain
 - No auto-escaping
 
@@ -726,21 +724,19 @@ def test_empty_search(client):
 | **Config** | Hardcoded values | Environment variables |
 | **Errors** | No handling | Try-except with logging |
 | **Database** | Raw connections | Connection pooling |
-| **Security** | SQL injection | Parameterized queries |
 | **Testing** | None | Comprehensive tests |
 
 ---
 
 ## 🎯 Key Takeaways
 
-1. **Always use an ORM** - Prevents SQL injection and provides cleaner code
+1. **Always use an ORM** - Provides cleaner code and better abstraction
 2. **Separate concerns** - HTML, CSS, JS, and Python should be in different files
 3. **Use templates** - Let the framework handle HTML generation
 4. **Handle errors** - Always use try-except and log errors
 5. **Write tests** - Tests save time and prevent bugs
 6. **Use configuration** - Never hardcode values
 7. **Follow conventions** - Use established project structures
-8. **Think security first** - Validate input, use HTTPS, sanitize data
 
 ---
 
@@ -752,5 +748,5 @@ def test_empty_search(client):
 4. Understand *why* the good version is better
 5. Apply these principles to your own projects
 
-**Remember**: Professional code is about more than just "working" - it's about maintainability, security, scalability, and teamwork!
+**Remember**: Professional code is about more than just "working" - it's about maintainability, scalability, and teamwork!
 

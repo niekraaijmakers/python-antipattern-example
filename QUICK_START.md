@@ -67,18 +67,6 @@ Press `Ctrl + C` in the terminal
 
 ---
 
-## Test SQL Injection (Educational)
-
-Try these in the search box:
-
-1. Normal search: `Alice`
-2. SQL Injection: `' OR '1'='1`
-3. Comment injection: `' OR 1=1 --`
-
-See `SQL_INJECTION_DEMO.md` for detailed explanations.
-
----
-
 ## Project Files Overview
 
 | File | Purpose |
@@ -87,7 +75,6 @@ See `SQL_INJECTION_DEMO.md` for detailed explanations.
 | `QUICK_START.md` | This file - fast setup guide |
 | `ANTI_PATTERNS_CHEAT_SHEET.md` | Complete list of all anti-patterns |
 | `GOOD_VS_BAD.md` | Side-by-side code comparisons |
-| `SQL_INJECTION_DEMO.md` | Security vulnerability demonstrations |
 | `terrible_server.py` | Main Flask server (intentionally bad) |
 | `student_page.py` | Student data page (huge file, mixed technologies) |
 | `grades_page.py` | Grades page (huge file, mixed technologies) |
@@ -106,24 +93,18 @@ See `SQL_INJECTION_DEMO.md` for detailed explanations.
    - Run `./start.sh`
    - Show it running
 
-2. **Show the Bad Code (10 min)**
+2. **Show the Bad Code (15 min)**
    - Open `student_page.py` in editor
    - Point out mixed HTML/CSS/JS/SQL/Python
-   - Show SQL injection vulnerability (line ~27)
    - Demonstrate inline styles and scripts
+   - Show lack of separation of concerns
 
-3. **Live SQL Injection Demo (10 min)**
-   - Navigate to students page
-   - Show normal search
-   - Show malicious input: `' OR '1'='1`
-   - Explain what happened
-
-4. **Show How to Fix (5 min)**
+3. **Show How to Fix (5 min)**
    - Open `GOOD_VS_BAD.md`
-   - Show parameterized query example
+   - Show ORM example
    - Explain proper architecture
 
-5. **Discussion & Q&A**
+4. **Discussion & Q&A**
    - Why these patterns are bad
    - Real-world consequences
    - Questions from students
@@ -182,9 +163,8 @@ chmod +x start.sh
 ### Intermediate Level:
 
 5. Read `GOOD_VS_BAD.md` for proper solutions
-6. Try the SQL injection demos from `SQL_INJECTION_DEMO.md`
-7. Pick one page and plan how you'd refactor it
-8. Write a code review document
+6. Pick one page and plan how you'd refactor it
+7. Write a code review document
 
 ### Advanced Level:
 
@@ -200,20 +180,19 @@ chmod +x start.sh
 
 ### Quick (1 hour):
 - List 10 anti-patterns with line numbers
-- Demonstrate one SQL injection attack
 - Explain why inline CSS is bad
+- Document separation of concerns violations
 
 ### Medium (3-4 hours):
 - Refactor the student page properly
 - Create separate CSS and JS files
-- Implement parameterized queries
+- Use an ORM for database queries
 
 ### Comprehensive (1-2 weeks):
 - Complete application refactor
 - Implement proper MVC architecture
 - Add authentication system
 - Write comprehensive tests
-- Deploy securely
 
 ---
 
@@ -225,7 +204,6 @@ chmod +x start.sh
 - [ ] Grades page shows 21 grade records
 - [ ] Search functionality works
 - [ ] Filter by major works
-- [ ] SQL injection `' OR '1'='1` returns all records
 - [ ] Sorting tables works
 - [ ] Statistics display correctly
 - [ ] No Python errors in console
@@ -237,7 +215,6 @@ chmod +x start.sh
 This code demonstrates:
 
 ✅ **Real-world mistakes** developers actually make
-✅ **Security vulnerabilities** that exist in production systems
 ✅ **Architecture problems** that hurt maintainability
 ✅ **Technical debt** that accumulates in projects
 ✅ **The importance** of following best practices
@@ -246,7 +223,7 @@ By seeing BAD code, students learn to:
 - Recognize anti-patterns
 - Understand WHY certain practices are bad
 - Appreciate good architecture
-- Write more secure code
+- Write better code
 - Think critically about code quality
 
 ---
@@ -256,10 +233,9 @@ By seeing BAD code, students learn to:
 After exploring this anti-pattern example:
 
 1. **Study the good alternatives** in `GOOD_VS_BAD.md`
-2. **Practice secure coding** with proper frameworks
-3. **Learn about** OWASP Top 10 security risks
-4. **Build projects** using best practices
-5. **Review code** with a security mindset
+2. **Practice good coding** with proper frameworks
+3. **Build projects** using best practices
+4. **Review code** with a critical eye
 
 ---
 
@@ -267,7 +243,6 @@ After exploring this anti-pattern example:
 
 - Flask documentation: https://flask.palletsprojects.com/
 - SQLAlchemy ORM: https://www.sqlalchemy.org/
-- OWASP: https://owasp.org/
 - Python PEP 8: https://peps.python.org/pep-0008/
 
 ---

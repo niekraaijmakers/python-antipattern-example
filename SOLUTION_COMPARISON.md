@@ -12,7 +12,6 @@ This document shows exactly how the solution in the `solution/` directory improv
 |--------|-------------|---------------|
 | **Total Files** | 3 Python files | 25+ organized files |
 | **Largest File** | 899 lines (grades_page.py) | 158 lines (student.py model) |
-| **SQL Injection Risk** | HIGH (5+ vulnerabilities) | NONE (ORM used) |
 | **Lines of Code** | ~1,400 (all mixed) | ~1,400 (properly separated) |
 | **Technologies Mixed** | All in 2-3 files | Properly separated |
 | **Maintainability** | Very Low | High |
@@ -30,13 +29,13 @@ bad-example/
 ├── terrible_server.py      (147 lines - setup)
 ├── student_page.py         (522 lines - EVERYTHING)
 │   ├── Python
-│   ├── SQL queries (with injection!)
+│   ├── SQL queries
 │   ├── HTML
 │   ├── CSS (300+ lines)
 │   └── JavaScript (200+ lines)
 └── grades_page.py          (899 lines - EVERYTHING)
     ├── Python
-    ├── SQL queries (with injection!)
+    ├── SQL queries
     ├── HTML
     ├── CSS (400+ lines)
     └── JavaScript (300+ lines)
@@ -81,108 +80,6 @@ solution/
 │           ├── students.js
 │           └── grades.js
 ```
-
----
-
-## 🔒 Security Comparison
-
-### SQL Queries - Students Search
-
-#### ❌ Bad Example (student_page.py, line 27):
-
-```python
-# VULNERABLE TO SQL INJECTION!
-search = request.args.get('search', '')
-query = "SELECT * FROM students WHERE name LIKE '%" + search + "%'"
-c.execute(query)
-students = c.fetchall()
-```
-
-**Problems:**
-- String concatenation with user input
-- Direct SQL execution
-- No parameterization
-- Attack: `' OR '1'='1` returns all records
-
-#### ✅ Good Solution (app/models/student.py, line 73):
-
-```python
-# SAFE - Using ORM
-@staticmethod
-def search(query_string, major=None):
-    query = Student.query
-    
-    if query_string:
-        # SQLAlchemy handles parameterization automatically
-        query = query.filter(Student.name.ilike(f'%{query_string}%'))
-    
-    if major:
-        query = query.filter(Student.major == major)
-    
-    return query.order_by(Student.name)
-```
-
-**Benefits:**
-- ORM handles SQL generation
-- Automatic parameterization
-- No SQL injection possible
-- Type safety
-
----
-
-### SQL Queries - Grades with JOIN
-
-#### ❌ Bad Example (grades_page.py, lines 30-38):
-
-```python
-# MULTIPLE SQL INJECTION POINTS!
-query = "SELECT g.id, g.student_id, s.name, g.course, g.grade, g.semester, g.credits FROM grades g JOIN students s ON g.student_id = s.id WHERE 1=1"
-
-if student_filter:
-    query += " AND s.name LIKE '%" + student_filter + "%'"
-if course_filter:
-    query += " AND g.course LIKE '%" + course_filter + "%'"
-if semester_filter:
-    query += " AND g.semester = '" + semester_filter + "'"
-
-c.execute(query)
-```
-
-**Problems:**
-- Multiple injection points
-- Manual JOIN construction
-- String concatenation everywhere
-- Complex and error-prone
-
-#### ✅ Good Solution (app/models/grade.py, line 43):
-
-```python
-# SAFE - ORM with JOIN
-@staticmethod
-def search(student_name=None, course=None, semester=None):
-    from app.models.student import Student
-    
-    # Start with a join query
-    query = Grade.query.join(Student)
-    
-    # Apply filters safely
-    if student_name:
-        query = query.filter(Student.name.ilike(f'%{student_name}%'))
-    
-    if course:
-        query = query.filter(Grade.course.ilike(f'%{course}%'))
-    
-    if semester:
-        query = query.filter(Grade.semester == semester)
-    
-    return query.order_by(Student.name, Grade.course)
-```
-
-**Benefits:**
-- ORM handles JOINs
-- All parameters safe
-- Readable and maintainable
-- Database agnostic
 
 ---
 
@@ -237,7 +134,6 @@ return html
 **Problems:**
 - HTML in Python strings
 - No template engine
-- XSS vulnerabilities
 - Impossible to maintain
 - No code reuse
 - CSS and JS embedded
@@ -555,35 +451,31 @@ def internal_error(error):
 
 ## 🎯 Key Improvements Summary
 
-### 1. Security
-- ❌ Bad: 5+ SQL injection vulnerabilities
-- ✅ Good: Zero vulnerabilities (ORM used)
-
-### 2. Structure
+### 1. Structure
 - ❌ Bad: 2-3 giant mixed files
 - ✅ Good: 25+ focused, organized files
 
-### 3. Separation
+### 2. Separation
 - ❌ Bad: HTML, CSS, JS, SQL, Python all mixed
 - ✅ Good: Each technology in appropriate files
 
-### 4. Maintainability
+### 3. Maintainability
 - ❌ Bad: Impossible to maintain as it grows
 - ✅ Good: Easy to find and modify code
 
-### 5. Testability
+### 4. Testability
 - ❌ Bad: Cannot write unit tests
 - ✅ Good: Each component is testable
 
-### 6. Scalability
+### 5. Scalability
 - ❌ Bad: Adding features means bigger files
 - ✅ Good: Adding features means new focused files
 
-### 7. Collaboration
+### 6. Collaboration
 - ❌ Bad: Merge conflicts guaranteed
 - ✅ Good: Multiple developers can work in parallel
 
-### 8. Performance
+### 7. Performance
 - ❌ Bad: No connection pooling, N+1 queries
 - ✅ Good: Connection pooling, optimized queries
 
@@ -597,7 +489,6 @@ cd /path/to/project
 python3 terrible_server.py
 
 # Runs on http://localhost:5000
-# Try SQL injection: ' OR '1'='1
 ```
 
 ### Good Solution:
@@ -606,7 +497,6 @@ cd solution
 python3 run.py
 
 # Runs on http://localhost:5001
-# Try SQL injection: ' OR '1'='1 (won't work!)
 ```
 
 ---
@@ -616,16 +506,13 @@ python3 run.py
 ### For Students:
 
 1. **Run both applications** side by side
-2. **Try SQL injection** on both (search: `' OR '1'='1`)
-   - Bad: Returns all records
-   - Good: Searches for that literal string
-3. **Compare file sizes**:
+2. **Compare file sizes**:
    - Bad: `wc -l student_page.py` (522 lines!)
    - Good: `wc -l app/views/students.py` (85 lines)
-4. **Find the CSS**:
+3. **Find the CSS**:
    - Bad: Embedded in Python string
    - Good: `solution/app/static/css/style.css`
-5. **Count the separation violations**:
+4. **Count the separation violations**:
    - Bad: Count how many technologies in one file
    - Good: Each technology has its place
 
@@ -633,7 +520,7 @@ python3 run.py
 
 ## 💡 Key Takeaways
 
-1. **Use ORMs** - They prevent SQL injection AND make code cleaner
+1. **Use ORMs** - They make code cleaner and more maintainable
 2. **Separate Concerns** - Each file should have one job
 3. **Use Templates** - Never generate HTML in Python strings
 4. **External Assets** - CSS and JS belong in separate files
@@ -649,7 +536,6 @@ python3 run.py
 The `solution/` directory shows you what **real production code** should look like:
 
 - ✅ Organized structure
-- ✅ Security first
 - ✅ Separation of concerns
 - ✅ Proper error handling
 - ✅ Configuration management

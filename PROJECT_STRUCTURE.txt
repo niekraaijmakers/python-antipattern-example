@@ -14,8 +14,7 @@ python-antipattern-example/
 │   ├── README.md                   📖 Main project documentation (read first!)
 │   ├── PROJECT_OVERVIEW.md         📋 Complete overview for instructors
 │   ├── ANTI_PATTERNS_CHEAT_SHEET.md 📝 All 23+ anti-patterns catalogued
-│   ├── GOOD_VS_BAD.md              🔄 Side-by-side code comparisons
-│   └── SQL_INJECTION_DEMO.md       🔓 Security vulnerability guide
+│   └── GOOD_VS_BAD.md              🔄 Side-by-side code comparisons
 │
 ├── 💻 APPLICATION CODE (THE BAD STUFF!)
 │   ├── terrible_server.py          🌐 Flask web server (147 lines)
@@ -24,7 +23,7 @@ python-antipattern-example/
 │   ├── student_page.py             👥 Student data page (500+ lines!)
 │   │                                  └─ HUGE file mixing:
 │   │                                     • Python backend logic
-│   │                                     • SQL queries (with injections!)
+│   │                                     • SQL queries
 │   │                                     • HTML generation
 │   │                                     • CSS styles (inline)
 │   │                                     • JavaScript code (inline)
@@ -32,7 +31,7 @@ python-antipattern-example/
 │   └── grades_page.py              📊 Grades page (650+ lines!)
 │                                      └─ Another massive file mixing:
 │                                         • Python backend logic
-│                                         • SQL queries (with injections!)
+│                                         • SQL queries
 │                                         • HTML generation
 │                                         • CSS styles (inline)
 │                                         • JavaScript code (inline)
@@ -75,7 +74,6 @@ student_page.py (500+ lines)
 │  • Display statistics
 │  • Export to CSV
 └─ Anti-patterns: (15+ issues)
-   • SQL injection vulnerability (line ~27)
    • HTML generation in Python
    • 300+ lines of inline CSS
    • 200+ lines of inline JavaScript
@@ -97,7 +95,6 @@ grades_page.py (650+ lines)
 │  • Bulk operations
 │  • Export to CSV
 └─ Anti-patterns: (18+ issues)
-   • Multiple SQL injection points (lines ~30-38)
    • HTML generation in Python
    • 400+ lines of inline CSS
    • 300+ lines of inline JavaScript
@@ -142,14 +139,6 @@ FOR LEARNING:
    ├─ Best practices
    └─ Summary tables
 
-FOR SECURITY:
-└─ SQL_INJECTION_DEMO.md (25 min read)
-   ├─ 6+ attack examples
-   ├─ Step-by-step guides
-   ├─ Prevention methods
-   ├─ Real-world cases
-   └─ Legal/ethical notes
-
 FOR STUDENTS (START HERE):
 └─ README.md (10 min read)
    ├─ Project purpose
@@ -167,7 +156,6 @@ FOR INSTRUCTORS:
 2. QUICK_START.md               (Learn how to demo)
 3. ANTI_PATTERNS_CHEAT_SHEET.md (Teaching reference)
 4. GOOD_VS_BAD.md               (Show solutions)
-5. SQL_INJECTION_DEMO.md        (Security focus)
 
 FOR STUDENTS:
 1. QUICK_START.md               (Get it running)
@@ -175,20 +163,17 @@ FOR STUDENTS:
 3. Explore the application      (See it in action)
 4. ANTI_PATTERNS_CHEAT_SHEET.md (Learn what's wrong)
 5. GOOD_VS_BAD.md               (Learn what's right)
-6. SQL_INJECTION_DEMO.md        (Security deep dive)
 
 ================================================================================
                               KEY STATISTICS
 ================================================================================
 
 Code Files:                3 Python files
-Documentation Files:       6 Markdown files
+Documentation Files:       5 Markdown files
 Total Lines of Code:       ~1,400+ lines
 Anti-Patterns:             23+ documented
 Sample Data Records:       31 total (10 students + 21 grades)
-SQL Injection Points:      5+ vulnerabilities
 Time to Setup:             2 minutes
-Time to Break:             30 seconds (SQL injection)
 Educational Value:         PRICELESS! 💎
 
 ================================================================================
@@ -198,9 +183,6 @@ Educational Value:         PRICELESS! 💎
 http://localhost:5000/              → Home page (navigation)
 http://localhost:5000/students      → Student data page
 http://localhost:5000/grades        → Grades page
-
-Sample SQL Injection URL:
-http://localhost:5000/students?search=' OR '1'='1
 
 ================================================================================
                          TECHNOLOGY STACK (MISUSED!)
@@ -219,12 +201,6 @@ Tests:          NONE (that's the problem!)
 ================================================================================
                            ANTI-PATTERN CATEGORIES
 ================================================================================
-
-🔴 SECURITY (Critical)
-   ├─ SQL Injection (5+ points)
-   ├─ No input validation
-   ├─ Debug mode enabled
-   └─ Error exposure
 
 🏗️ ARCHITECTURE
    ├─ No separation of concerns
@@ -264,7 +240,6 @@ Tests:          NONE (that's the problem!)
 ✅ Grades page shows 21 records
 ✅ Search functionality works
 ✅ Filters work
-✅ SQL injection ' OR '1'='1 returns all records
 ✅ Tables are sortable
 ✅ Statistics display
 ✅ CSV export works
@@ -276,16 +251,14 @@ Tests:          NONE (that's the problem!)
 
 After using this project, students should understand:
 
-1. Why SQL injection is dangerous
-2. The importance of separation of concerns
-3. How to use ORMs safely
-4. Proper project structure
-5. Security-first mindset
-6. Code organization best practices
-7. The value of templating engines
-8. Error handling importance
-9. Testing necessity
-10. Professional development standards
+1. The importance of separation of concerns
+2. How to use ORMs for database operations
+3. Proper project structure
+4. Code organization best practices
+5. The value of templating engines
+6. Error handling importance
+7. Testing necessity
+8. Professional development standards
 
 ================================================================================
                             ASSIGNMENT IDEAS
@@ -293,7 +266,6 @@ After using this project, students should understand:
 
 📝 Short Assignments (1-3 hours):
    • Find 10 anti-patterns
-   • Test SQL injections
    • Write code review
    • Explain one category of issues
 
@@ -308,7 +280,6 @@ After using this project, students should understand:
    • Proper MVC architecture
    • Add authentication
    • Write comprehensive tests
-   • Deploy securely
 
 ================================================================================
                               CONTACT & SUPPORT
@@ -330,7 +301,7 @@ Every anti-pattern is intentional and educational.
 
 DO NOT copy this code into real projects!
 DO learn from these mistakes!
-DO write secure, well-architected applications!
+DO write well-architected applications!
 
 ================================================================================
                                HAPPY TEACHING! 🎓

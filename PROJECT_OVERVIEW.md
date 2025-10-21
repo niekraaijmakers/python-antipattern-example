@@ -10,7 +10,6 @@ This is a complete, ready-to-use educational project demonstrating web developme
 
 Teach students what **NOT TO DO** in web development by showing real examples of:
 - Poor architecture
-- Security vulnerabilities  
 - Bad coding practices
 - Mixed technology concerns
 - Lack of proper structure
@@ -31,7 +30,7 @@ Teach students what **NOT TO DO** in web development by showing real examples of
 2. **`student_page.py`** (500+ lines)
    - **HUGE file mixing everything together**
    - Python backend logic
-   - SQL queries (with injection vulnerabilities)
+   - SQL queries
    - HTML generation
    - CSS styles (inline)
    - JavaScript code (inline)
@@ -76,14 +75,6 @@ Teach students what **NOT TO DO** in web development by showing real examples of
    - Industry best practices
    - Summary table
 
-8. **`SQL_INJECTION_DEMO.md`** (Security Focus)
-   - Detailed SQL injection guide
-   - 6+ attack examples with code
-   - Safe testing scenarios
-   - Prevention techniques
-   - Real-world impact examples
-   - Legal and ethical notices
-
 ### Utility Files
 
 9. **`requirements.txt`**
@@ -124,7 +115,6 @@ Teach students what **NOT TO DO** in web development by showing real examples of
 
 - **See real bad code** - Not just theoretical
 - **Understand consequences** - Learn why it matters
-- **Hands-on testing** - Try SQL injections safely
 - **Clear comparisons** - Good vs bad examples
 - **Progressive learning** - Beginner to advanced path
 
@@ -139,13 +129,6 @@ Teach students what **NOT TO DO** in web development by showing real examples of
 ---
 
 ## 🔍 Key Anti-Patterns Demonstrated
-
-### Security Issues (Critical)
-
-1. **SQL Injection** - String concatenation in queries
-2. **No Input Validation** - Accept any user input
-3. **Debug Mode** - Always enabled
-4. **Exposed Errors** - Show stack traces to users
 
 ### Architecture Problems
 
@@ -174,7 +157,7 @@ Teach students what **NOT TO DO** in web development by showing real examples of
 ### Frontend Issues
 
 20. **Alert/Prompt UI** - Poor user experience
-21. **Inline Event Handlers** - Security risks
+21. **Inline Event Handlers** - Mixing concerns
 22. **No Build Process** - No minification/bundling
 23. **Client-Side Stats** - Should be server-side
 
@@ -184,12 +167,11 @@ Teach students what **NOT TO DO** in web development by showing real examples of
 
 - **Total Lines of Code**: ~1,400+
 - **Python Files**: 3
-- **Documentation Files**: 6
+- **Documentation Files**: 5
 - **Mixed Technology Files**: 2 (student_page.py, grades_page.py)
 - **Identified Anti-Patterns**: 23+
 - **Sample Students**: 10
 - **Sample Grades**: 21
-- **SQL Injection Points**: 5+
 
 ---
 
@@ -200,27 +182,23 @@ Teach students what **NOT TO DO** in web development by showing real examples of
 1. Run `./start.sh`
 2. Open http://localhost:5000
 3. Show students page
-4. Enter SQL injection: `' OR '1'='1`
-5. Show all records returned
-6. Open `student_page.py` in editor
-7. Point out mixed technologies
-8. Discuss implications
+4. Open `student_page.py` in editor
+5. Point out mixed technologies
+6. Discuss implications
 
 ### 30-Minute Class Session:
 
 1. **Introduction** (5 min) - Project overview
-2. **Code Walkthrough** (10 min) - Show anti-patterns
-3. **Live Hacking** (10 min) - SQL injection demo
-4. **Solutions** (5 min) - Show good vs bad
+2. **Code Walkthrough** (15 min) - Show anti-patterns
+3. **Solutions** (10 min) - Show good vs bad
 
 ### Full Workshop (2-3 hours):
 
 1. Setup and exploration
 2. Detailed code review
-3. Security demonstrations
-4. Refactoring exercise
-5. Group discussion
-6. Assignment planning
+3. Refactoring exercise
+4. Group discussion
+5. Assignment planning
 
 ---
 
@@ -228,15 +206,12 @@ Teach students what **NOT TO DO** in web development by showing real examples of
 
 After working with this project, students should be able to:
 
-✅ Identify SQL injection vulnerabilities
 ✅ Recognize poor code organization
 ✅ Understand separation of concerns
 ✅ Appreciate proper architecture
-✅ Use ORMs and parameterized queries
+✅ Use ORMs for database operations
 ✅ Implement proper error handling
-✅ Write secure web applications
 ✅ Follow industry best practices
-✅ Conduct basic security audits
 ✅ Refactor legacy code
 
 ---
@@ -249,19 +224,13 @@ After working with this project, students should be able to:
 - Provide line numbers and code samples
 - **Deliverable**: Written report
 
-### Assignment 2: SQL Injection Lab (2-3 hours)
-- Test 5 different SQL injection attacks
-- Document what happens for each
-- Explain how to prevent each type
-- **Deliverable**: Lab report with screenshots
-
-### Assignment 3: Code Review (2-4 hours)
+### Assignment 2: Code Review (2-4 hours)
 - Write comprehensive code review
-- Cover security, architecture, and quality
+- Cover architecture and quality
 - Prioritize issues by severity
 - **Deliverable**: Professional code review document
 
-### Assignment 4: Refactoring Project (1-2 weeks)
+### Assignment 3: Refactoring Project (1-2 weeks)
 - Choose one page to refactor
 - Implement proper MVC structure
 - Use Jinja2 templates
@@ -269,12 +238,6 @@ After working with this project, students should be able to:
 - Add error handling
 - Write tests
 - **Deliverable**: Refactored application + documentation
-
-### Assignment 5: Security Presentation (Group)
-- Research a real-world SQL injection breach
-- Present to class
-- Demonstrate prevention techniques
-- **Deliverable**: 15-minute presentation
 
 ---
 
@@ -309,7 +272,6 @@ After working with this project, students should be able to:
 - Print view
 
 **Bad Practices Shown**:
-- SQL injection in search
 - Inline CSS (300+ lines)
 - Inline JavaScript (200+ lines)
 - HTML generated in Python
@@ -330,7 +292,6 @@ After working with this project, students should be able to:
 - Export CSV
 
 **Bad Practices Shown**:
-- Multiple SQL injection points
 - Inline CSS (400+ lines)
 - Inline JavaScript (300+ lines)
 - Client-side statistics
@@ -344,7 +305,6 @@ After working with this project, students should be able to:
 
 ### Course Types:
 - Web Development courses
-- Security courses
 - Software Engineering
 - Code Quality/Testing courses
 - Database courses
@@ -352,14 +312,13 @@ After working with this project, students should be able to:
 ### Student Levels:
 - **Beginner**: Learn what to avoid from the start
 - **Intermediate**: Recognize patterns, practice refactoring
-- **Advanced**: Security analysis, complete redesign
+- **Advanced**: Complete redesign and architecture planning
 
 ### Teaching Methods:
 - Lectures with live demos
 - Lab exercises
 - Group code reviews
 - Individual assignments
-- Security workshops
 - Capstone projects
 
 ---
@@ -368,12 +327,11 @@ After working with this project, students should be able to:
 
 1. **Complete Working Example** - Not just snippets
 2. **Realistic Complexity** - Real-world scale issues
-3. **Multiple Learning Dimensions** - Security, architecture, quality
-4. **Safe Environment** - Practice attacks without legal issues
-5. **Comprehensive Documentation** - Everything explained
-6. **Ready to Use** - No setup hassles
-7. **Flexible Teaching** - Use any part independently
-8. **Engaging Format** - Students enjoy "hacking" the system
+3. **Multiple Learning Dimensions** - Architecture and quality
+4. **Comprehensive Documentation** - Everything explained
+5. **Ready to Use** - No setup hassles
+6. **Flexible Teaching** - Use any part independently
+7. **Engaging Format** - Students find exploring bad code interesting
 
 ---
 
@@ -385,15 +343,13 @@ After working with this project, students should be able to:
 2. **Test the application** - Run it yourself first
 3. **Customize if needed** - Add your own examples
 4. **Set expectations** - Explain this is intentionally bad
-5. **Emphasize ethics** - Only test on this system
 
 ### During Class:
 
 1. **Show don't tell** - Live demonstrations work best
 2. **Encourage questions** - Anti-patterns spark discussions
-3. **Relate to real world** - Mention actual breaches
-4. **Balance criticism** - Show solutions, not just problems
-5. **Make it interactive** - Let students find issues
+3. **Balance criticism** - Show solutions, not just problems
+4. **Make it interactive** - Let students find issues
 
 ### After Class:
 
@@ -409,13 +365,11 @@ After working with this project, students should be able to:
 
 **Common Feedback**:
 - "I can't believe code like this exists!"
-- "This is actually fun to break"
-- "Now I understand why security matters"
+- "This is interesting to analyze"
 - "The comparison docs are really helpful"
 - "I've made some of these mistakes..."
 
 **Learning Moments**:
-- Shock at how easy SQL injection is
 - Realization about code organization importance
 - Understanding of separation of concerns
 - Appreciation for frameworks and tools
@@ -430,15 +384,15 @@ After working with this project, students should be able to:
 - **Add more students** - Edit `terrible_server.py` line 27-36
 - **Add more grades** - Edit `terrible_server.py` line 53-73
 - **Change port** - Edit last line of `terrible_server.py`
-- **Add new vulnerabilities** - Extend the page files
+- **Add new anti-patterns** - Extend the page files
 - **Update documentation** - Markdown files are clear
 
 ### Suggestions for Extensions:
 
 - Add authentication (badly, of course)
-- Add file upload (more vulnerabilities)
-- Add user registration (XSS examples)
-- Add admin panel (privilege escalation demo)
+- Add file upload (with poor organization)
+- Add user registration (more mixed code)
+- Add admin panel (more anti-patterns)
 - Add API endpoints (show REST anti-patterns)
 
 ---
@@ -452,7 +406,6 @@ After working with this project, students should be able to:
 - Chrome, Firefox, Safari
 
 **Verified**:
-- All SQL injections work
 - Application runs without crashes
 - Documentation is accurate
 - Scripts execute properly
@@ -490,12 +443,10 @@ A: Excellent! Encourage documentation of discoveries.
 
 ### Fits Well With:
 
-- **OWASP Top 10** curriculum
-- **Secure coding** practices
 - **Software architecture** patterns
 - **Code review** training
 - **Refactoring** exercises
-- **Database security** topics
+- **Database** topics
 
 ### Learning Standards:
 
@@ -512,9 +463,8 @@ Track student learning through:
 
 - Anti-pattern identification accuracy
 - Quality of code reviews written
-- Security vulnerability detection
 - Refactoring solution quality
-- Understanding of prevention methods
+- Understanding of best practices
 - Engagement in discussions
 
 ---
@@ -525,12 +475,12 @@ This project provides a complete, turnkey solution for teaching web development 
 
 - **Educational** - Clear learning objectives
 - **Practical** - Hands-on experience
-- **Engaging** - Students enjoy the "hacking"
+- **Engaging** - Students enjoy exploring anti-patterns
 - **Comprehensive** - Covers multiple topics
 - **Flexible** - Use as needed
 - **Ready** - No prep work required
 
-Perfect for any instructor wanting to show students the importance of secure, well-architected code through negative examples.
+Perfect for any instructor wanting to show students the importance of well-architected code through negative examples.
 
 ---
 

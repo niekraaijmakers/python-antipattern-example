@@ -6,51 +6,6 @@ This document catalogs all the intentional anti-patterns present in this codebas
 
 ---
 
-## 🔴 CRITICAL SECURITY ISSUES
-
-### 1. SQL Injection Vulnerabilities
-**Location**: `student_page.py` lines ~20-30, `grades_page.py` lines ~20-40
-
-**Bad Code**:
-```python
-query = "SELECT * FROM students WHERE name LIKE '%" + search + "%'"
-c.execute(query)
-```
-
-**Why It's Bad**:
-- Direct string concatenation with user input
-- Attacker can inject SQL code
-- Can lead to data theft, data loss, or complete database compromise
-
-**Attack Example**:
-```
-search = "'; DROP TABLE students; --"
-```
-
-**Correct Approach**:
-```python
-query = "SELECT * FROM students WHERE name LIKE ?"
-c.execute(query, (f"%{search}%",))
-```
-
----
-
-### 2. No Input Validation
-**Location**: Throughout `student_page.py` and `grades_page.py`
-
-**Why It's Bad**:
-- No checking of user input
-- No sanitization
-- No type checking
-- XSS vulnerabilities possible
-
-**Correct Approach**:
-- Use validation libraries (WTForms, Pydantic)
-- Sanitize all user input
-- Implement proper error handling
-
----
-
 ## 🏗️ ARCHITECTURE ANTI-PATTERNS
 
 ### 3. No Separation of Concerns
@@ -104,7 +59,6 @@ html = "<div>" + some_value + "</div>"
 - Hard to read and maintain
 - No syntax highlighting
 - Prone to errors
-- Security risks (XSS)
 
 **Correct Approach**:
 - Use templating engines (Jinja2, Django templates)
@@ -299,7 +253,6 @@ const StudentApp = {
 **Why It's Bad**:
 - Mixing JavaScript with HTML
 - Hard to maintain
-- CSP (Content Security Policy) violations
 
 **Correct Approach**:
 ```javascript
@@ -335,9 +288,7 @@ app.run(debug=True, port=5000)
 ```
 
 **Why It's Bad**:
-- Exposes sensitive information
-- Shows detailed error messages to users
-- Security risk
+- Exposes detailed error messages to users
 - Performance impact
 
 **Correct Approach**:
@@ -448,16 +399,14 @@ logger.error("Something went wrong")
 
 ### For Students:
 
-1. **Find the SQL injection vulnerability** - Can you craft a malicious input?
-2. **Refactor one page** - Choose either students or grades and restructure properly
-3. **Security audit** - List all security issues you can find
-4. **Performance analysis** - Identify bottlenecks
-5. **Code review** - Write a detailed code review
-6. **Architecture design** - Draw how this should be structured
-7. **Create proper tests** - Write tests for core functionality
-8. **Extract CSS** - Move all CSS to external files
-9. **Implement an ORM** - Replace raw SQL with SQLAlchemy
-10. **Add validation** - Implement proper input validation
+1. **Refactor one page** - Choose either students or grades and restructure properly
+2. **Performance analysis** - Identify bottlenecks
+3. **Code review** - Write a detailed code review
+4. **Architecture design** - Draw how this should be structured
+5. **Create proper tests** - Write tests for core functionality
+6. **Extract CSS** - Move all CSS to external files
+7. **Implement an ORM** - Replace raw SQL with SQLAlchemy
+8. **Add validation** - Implement proper input validation
 
 ---
 
@@ -466,7 +415,6 @@ logger.error("Something went wrong")
 To fix this codebase, you would need to:
 
 - [ ] Use SQLAlchemy ORM
-- [ ] Implement parameterized queries
 - [ ] Separate HTML into Jinja2 templates
 - [ ] Move CSS to external files
 - [ ] Move JavaScript to external files
@@ -477,12 +425,9 @@ To fix this codebase, you would need to:
 - [ ] Create proper project structure
 - [ ] Add unit tests
 - [ ] Implement connection pooling
-- [ ] Add authentication
-- [ ] Implement CSRF protection
 - [ ] Use blueprints for routing
 - [ ] Add API endpoints
 - [ ] Implement caching
-- [ ] Add rate limiting
 - [ ] Use proper configuration management
 - [ ] Add documentation
 
@@ -490,7 +435,6 @@ To fix this codebase, you would need to:
 
 ## 📚 Recommended Reading
 
-- OWASP Top 10 Security Risks
 - Python PEP 8 Style Guide
 - Flask Best Practices
 - SQLAlchemy Documentation
@@ -499,5 +443,5 @@ To fix this codebase, you would need to:
 
 ---
 
-**Remember**: Every "bad" thing in this code is intentional for teaching purposes. In real projects, follow industry best practices and security guidelines!
+**Remember**: Every "bad" thing in this code is intentional for teaching purposes. In real projects, follow industry best practices!
 
