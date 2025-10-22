@@ -2,6 +2,9 @@
 ANTI-PATTERN EXAMPLE - STUDENT DATA PAGE
 This file demonstrates TERRIBLE practices:
 - Mixing HTML, CSS, JavaScript, and SQL in one file
+- Business logic mixed with presentation logic
+- Create AND Delete operations in the same function
+- Validation logic in the view function
 - No separation of concerns
 - Inline styles everywhere
 - Repetitive code
@@ -10,6 +13,8 @@ This file demonstrates TERRIBLE practices:
 - No templating engine
 - Giant functions
 - Poor variable naming
+- Handling GET, POST (create), and POST (delete) in the same function
+- No RESTful design
 DO NOT USE THIS CODE IN REAL PROJECTS!
 """
 
@@ -17,6 +22,94 @@ import sqlite3
 from flask import request
 
 def render_student_page():
+    # ANTI-PATTERN: Handling both GET and POST in the same function!
+    message = ""
+    message_type = ""
+    
+    # ANTI-PATTERN: Business logic mixed with view logic
+    if request.method == 'POST':
+        # ANTI-PATTERN: Multiple actions handled in one function without proper routing
+        action = request.form.get('action', 'create')
+        
+        if action == 'delete':
+            # ANTI-PATTERN: Delete logic mixed in the same function!
+            delete_id = request.form.get('delete_id', '')
+            
+            if not delete_id:
+                message = "Error: No student ID provided for deletion"
+                message_type = "error"
+            else:
+                # ANTI-PATTERN: Direct database deletion in view function
+                conn = sqlite3.connect("students.db")
+                c = conn.cursor()
+                
+                # ANTI-PATTERN: No check if student exists before deleting
+                # ANTI-PATTERN: Deleting without checking for foreign key constraints
+                try:
+                    # First delete associated grades
+                    c.execute("DELETE FROM grades WHERE student_id = ?", (int(delete_id),))
+                    # Then delete the student
+                    c.execute("DELETE FROM students WHERE id = ?", (int(delete_id),))
+                    
+                    if c.rowcount > 0:
+                        conn.commit()
+                        message = "Student deleted successfully! 🗑️"
+                        message_type = "success"
+                    else:
+                        message = "Error: Student not found"
+                        message_type = "error"
+                except Exception as e:
+                    message = f"Error deleting student: {str(e)}"
+                    message_type = "error"
+                finally:
+                    conn.close()
+        else:
+            # ANTI-PATTERN: Create logic
+            # ANTI-PATTERN: Getting form data without validation
+            name = request.form.get('name', '')
+            email = request.form.get('email', '')
+            age = request.form.get('age', '')
+            major = request.form.get('major', '')
+            gpa = request.form.get('gpa', '')
+            
+            # ANTI-PATTERN: Validation logic in the view function
+            errors = []
+            if not name or len(name) < 2:
+                errors.append("Name must be at least 2 characters")
+            if not email or '@' not in email:
+                errors.append("Invalid email")
+            if age:
+                try:
+                    age_int = int(age)
+                    if age_int < 16 or age_int > 100:
+                        errors.append("Age must be between 16 and 100")
+                except:
+                    errors.append("Age must be a number")
+            if gpa:
+                try:
+                    gpa_float = float(gpa)
+                    if gpa_float < 0 or gpa_float > 4.0:
+                        errors.append("GPA must be between 0 and 4.0")
+                except:
+                    errors.append("GPA must be a number")
+            
+            if errors:
+                message = "Errors: " + ", ".join(errors)
+                message_type = "error"
+            else:
+                # ANTI-PATTERN: Database operations in view function
+                conn = sqlite3.connect("students.db")
+                c = conn.cursor()
+                
+                # ANTI-PATTERN: No error handling for database operations
+                c.execute("INSERT INTO students (name, email, age, major, gpa) VALUES (?, ?, ?, ?, ?)",
+                         (name, email, int(age) if age else None, major, float(gpa) if gpa else None))
+                conn.commit()
+                conn.close()
+                
+                message = "Student created successfully!"
+                message_type = "success"
+    
     # ANTI-PATTERN: Getting parameters directly in page rendering function
     search = request.args.get('search', '')
     filter_major = request.args.get('major', '')
@@ -242,6 +335,65 @@ def render_student_page():
         .badge-high { background: #4CAF50; }
         .badge-medium { background: #FF9800; }
         .badge-low { background: #F44336; }
+        
+        .message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .message-success {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .message-error {
+            background: #F44336;
+            color: white;
+        }
+        
+        .create-form {
+            background: #f0f8ff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 2px solid #45B7D1;
+        }
+        
+        .create-form h3 {
+            margin-top: 0;
+            color: #45B7D1;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .form-row input, .form-row select {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .btn-create {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .btn-create:hover {
+            background: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -255,6 +407,41 @@ def render_student_page():
         <div class="nav">
             <a href="/">🏠 Home</a>
             <a href="/grades">📊 View Grades</a>
+        </div>"""
+    
+    # ANTI-PATTERN: Generating message HTML in Python
+    if message:
+        html += f"""
+        <div class="message message-{message_type}">
+            {message}
+        </div>"""
+    
+    html += """
+        
+        <!-- ANTI-PATTERN: Create form mixed with display logic -->
+        <div class="create-form">
+            <h3>➕ Add New Student</h3>
+            <form method="POST" action="/students">
+                <div class="form-row">
+                    <input type="text" name="name" placeholder="Full Name *" required>
+                    <input type="email" name="email" placeholder="Email *" required>
+                </div>
+                <div class="form-row">
+                    <input type="number" name="age" placeholder="Age" min="16" max="100">
+                    <input type="text" name="major" placeholder="Major" list="major-list">
+                    <datalist id="major-list">"""
+    
+    # ANTI-PATTERN: Building datalist options in Python
+    for major in majors:
+        html += f"""
+                        <option value="{major[0]}">"""
+    
+    html += """
+                    </datalist>
+                    <input type="number" name="gpa" placeholder="GPA" step="0.01" min="0" max="4.0">
+                </div>
+                <button type="submit" class="btn-create">✅ Create Student</button>
+            </form>
         </div>
         
         <div class="stats">
@@ -355,7 +542,11 @@ def render_student_page():
     
     # ANTI-PATTERN: Embedding data in JavaScript
     for i, student in enumerate(students):
-        html += f"            {{{{'id': {student[0]}, 'name': '{student[1]}', 'email': '{student[2]}', 'age': {student[3]}, 'major': '{student[4]}', 'gpa': {student[5]}}}}}"
+        # ANTI-PATTERN: No proper escaping for special characters
+        name = str(student[1]).replace("'", "\\'").replace('"', '\\"')
+        email = str(student[2]).replace("'", "\\'").replace('"', '\\"')
+        major = str(student[4]).replace("'", "\\'").replace('"', '\\"')
+        html += f"            {{'id': {student[0]}, 'name': '{name}', 'email': '{email}', 'age': {student[3]}, 'major': '{major}', 'gpa': {student[5]}}}"
         if i < len(students) - 1:
             html += ",\n"
         else:
@@ -438,9 +629,27 @@ def render_student_page():
         
         function deleteStudent(studentId) {
             // ANTI-PATTERN: No confirmation, poor error handling
-            if (confirm("Delete student " + studentId + "?")) {
-                alert("Delete functionality not implemented! This is a demo.");
-                console.log("Would delete student " + studentId);
+            var student = students.find(function(s) { return s.id === studentId; });
+            if (student && confirm("Are you sure you want to delete " + student.name + "? This will also delete all their grades!")) {
+                // ANTI-PATTERN: Creating and submitting form via JavaScript
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/students';
+                
+                var actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = 'delete';
+                form.appendChild(actionInput);
+                
+                var idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'delete_id';
+                idInput.value = studentId;
+                form.appendChild(idInput);
+                
+                document.body.appendChild(form);
+                form.submit();
             }
         }
         

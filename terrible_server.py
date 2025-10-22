@@ -110,11 +110,13 @@ def index():
 from student_page import render_student_page
 from grades_page import render_grades_page
 
-@app.route('/students')
+# ANTI-PATTERN: Accepting both GET and POST without proper RESTful design
+@app.route('/students', methods=['GET', 'POST'])
 def students():
     return render_student_page()
 
-@app.route('/grades')
+# ANTI-PATTERN: Accepting both GET and POST without proper RESTful design
+@app.route('/grades', methods=['GET', 'POST'])
 def grades():
     return render_grades_page()
 

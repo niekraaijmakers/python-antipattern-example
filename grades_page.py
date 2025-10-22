@@ -2,6 +2,8 @@
 ANTI-PATTERN EXAMPLE - GRADES PAGE
 This file demonstrates TERRIBLE practices:
 - Everything mixed together (HTML, CSS, JS, SQL, Python)
+- Business logic and validation in view function
+- Create AND Delete operations crammed in the same function
 - No MVC pattern
 - Massive inline styles and scripts
 - No code reuse
@@ -9,6 +11,8 @@ This file demonstrates TERRIBLE practices:
 - Poor performance (N+1 queries)
 - No error handling
 - Global state management
+- Handling GET, POST (create), and POST (delete) in the same massive function
+- No RESTful design
 DO NOT USE THIS CODE IN REAL PROJECTS!
 """
 
@@ -16,6 +20,90 @@ import sqlite3
 from flask import request
 
 def render_grades_page():
+    # ANTI-PATTERN: Handling both GET and POST in the same massive function!
+    message = ""
+    message_type = ""
+    
+    # ANTI-PATTERN: Business logic mixed directly in view
+    if request.method == 'POST':
+        # ANTI-PATTERN: Multiple different actions in one handler
+        action = request.form.get('action', 'create')
+        
+        if action == 'delete':
+            # ANTI-PATTERN: Delete logic crammed into the same function!
+            delete_id = request.form.get('delete_id', '')
+            
+            if not delete_id:
+                message = "Error: No grade ID provided for deletion"
+                message_type = "error"
+            else:
+                # ANTI-PATTERN: Direct database deletion without service layer
+                conn = sqlite3.connect("students.db")
+                c = conn.cursor()
+                
+                # ANTI-PATTERN: No verification before deletion
+                try:
+                    c.execute("DELETE FROM grades WHERE id = ?", (int(delete_id),))
+                    
+                    if c.rowcount > 0:
+                        conn.commit()
+                        message = "Grade deleted successfully! 🗑️"
+                        message_type = "success"
+                    else:
+                        message = "Error: Grade not found"
+                        message_type = "error"
+                except Exception as e:
+                    message = f"Error deleting grade: {str(e)}"
+                    message_type = "error"
+                finally:
+                    conn.close()
+        else:
+            # ANTI-PATTERN: Create logic
+            # ANTI-PATTERN: No validation layer, just grab form data
+            student_id = request.form.get('student_id', '')
+            course = request.form.get('course', '')
+            grade = request.form.get('grade', '')
+            semester = request.form.get('semester', '')
+            credits = request.form.get('credits', '')
+            
+            # ANTI-PATTERN: Validation logic in view function instead of separate validator
+            errors = []
+            if not student_id:
+                errors.append("Student is required")
+            if not course or len(course) < 2:
+                errors.append("Course name must be at least 2 characters")
+            if not grade:
+                errors.append("Grade is required")
+            valid_grades = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F']
+            if grade and grade not in valid_grades:
+                errors.append("Invalid grade")
+            if not semester:
+                errors.append("Semester is required")
+            if credits:
+                try:
+                    credits_int = int(credits)
+                    if credits_int < 1 or credits_int > 6:
+                        errors.append("Credits must be between 1 and 6")
+                except:
+                    errors.append("Credits must be a number")
+            
+            if errors:
+                message = "Errors: " + "; ".join(errors)
+                message_type = "error"
+            else:
+                # ANTI-PATTERN: Direct database manipulation in view function
+                conn = sqlite3.connect("students.db")
+                c = conn.cursor()
+                
+                # ANTI-PATTERN: No try-except for database errors
+                c.execute("INSERT INTO grades (student_id, course, grade, semester, credits) VALUES (?, ?, ?, ?, ?)",
+                         (int(student_id), course, grade, semester, int(credits) if credits else 3))
+                conn.commit()
+                conn.close()
+                
+                message = "Grade added successfully! ✅"
+                message_type = "success"
+    
     # ANTI-PATTERN: Getting parameters directly in page rendering function
     student_filter = request.args.get('student', '')
     course_filter = request.args.get('course', '')
@@ -45,6 +133,10 @@ def render_grades_page():
     # Get all unique semesters
     c.execute("SELECT DISTINCT semester FROM grades ORDER BY semester")
     semesters = c.fetchall()
+    
+    # Get unique courses for datalist
+    c.execute("SELECT DISTINCT course FROM grades ORDER BY course")
+    courses = c.fetchall()
     
     conn.close()
     
@@ -472,6 +564,100 @@ def render_grades_page():
             padding: 20px;
             border-top: 2px solid #e9ecef;
         }
+        
+        .message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message-success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .message-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .create-grade-form {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 3px solid #00bcd4;
+            box-shadow: 0 5px 15px rgba(0,188,212,0.2);
+        }
+        
+        .create-grade-form h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #00695c;
+            font-size: 22px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #00695c;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border: 2px solid #b2ebf2;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #00bcd4;
+            box-shadow: 0 0 5px rgba(0,188,212,0.5);
+        }
+        
+        .btn-add-grade {
+            background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%);
+            color: white;
+            padding: 14px 35px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        
+        .btn-add-grade:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,188,212,0.4);
+        }
     </style>
 </head>
 <body>
@@ -489,6 +675,89 @@ def render_grades_page():
             <a href="/" class="nav-btn">🏠 Home</a>
             <a href="/students" class="nav-btn">👥 Students</a>
             <a href="/grades" class="nav-btn">📊 Grades (Current)</a>
+        </div>"""
+    
+    # ANTI-PATTERN: Generating conditional HTML in Python
+    if message:
+        html += f"""
+        <div class="message message-{message_type}">
+            {message}
+        </div>"""
+    
+    html += """
+        
+        <!-- ANTI-PATTERN: Create form mixed with everything else -->
+        <div class="create-grade-form">
+            <h3>➕ Add New Grade Entry</h3>
+            <form method="POST" action="/grades">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Student *</label>
+                        <select name="student_id" required>
+                            <option value="">-- Select Student --</option>"""
+    
+    # ANTI-PATTERN: Building select options in Python
+    for student in all_students:
+        html += f"""
+                            <option value="{student[0]}">{student[1]}</option>"""
+    
+    html += """
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Course *</label>
+                        <input type="text" name="course" placeholder="e.g. Data Structures" required list="course-list">
+                        <datalist id="course-list">"""
+    
+    # ANTI-PATTERN: More options in Python
+    for course in courses:
+        html += f"""
+                            <option value="{course[0]}">"""
+    
+    html += """
+                        </datalist>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Grade *</label>
+                        <select name="grade" required>
+                            <option value="">-- Select Grade --</option>
+                            <option value="A">A</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B">B</option>
+                            <option value="B-">B-</option>
+                            <option value="C+">C+</option>
+                            <option value="C">C</option>
+                            <option value="C-">C-</option>
+                            <option value="D">D</option>
+                            <option value="F">F</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Semester *</label>
+                        <input type="text" name="semester" placeholder="e.g. Fall 2024" required list="semester-list">
+                        <datalist id="semester-list">"""
+    
+    # ANTI-PATTERN: Even more datalist in Python
+    for semester in semesters:
+        html += f"""
+                            <option value="{semester[0]}">"""
+    
+    html += """
+                        </datalist>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Credits</label>
+                        <input type="number" name="credits" placeholder="3" min="1" max="6" value="3">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-add-grade">✅ Add Grade</button>
+            </form>
         </div>
         
         <div class="stats-container">
@@ -643,7 +912,12 @@ def render_grades_page():
     
     # ANTI-PATTERN: Embedding database data in JavaScript
     for i, grade in enumerate(grades):
-        html += f"""            {{id: {grade[0]}, studentId: {grade[1]}, studentName: "{grade[2]}", course: "{grade[3]}", grade: "{grade[4]}", semester: "{grade[5]}", credits: {grade[6]}}}"""
+        # ANTI-PATTERN: No proper escaping for special characters
+        student_name = str(grade[2]).replace('"', '\\"').replace("'", "\\'")
+        course_name = str(grade[3]).replace('"', '\\"').replace("'", "\\'")
+        grade_value = str(grade[4]).replace('"', '\\"').replace("'", "\\'")
+        semester_value = str(grade[5]).replace('"', '\\"').replace("'", "\\'")
+        html += f"""            {{id: {grade[0]}, studentId: {grade[1]}, studentName: "{student_name}", course: "{course_name}", grade: "{grade_value}", semester: "{semester_value}", credits: {grade[6]}}}"""
         if i < len(grades) - 1:
             html += ",\n"
         else:
@@ -703,9 +977,27 @@ def render_grades_page():
         }
         
         function deleteGrade(gradeId) {
-            if (confirm("Are you sure you want to delete this grade record?")) {
-                alert("Delete functionality not implemented in this demo!");
-                console.log("Would delete grade " + gradeId);
+            var grade = allGrades.find(function(g) { return g.id === gradeId; });
+            if (grade && confirm("Are you sure you want to delete this grade record?\\n\\n" + grade.studentName + " - " + grade.course + " (" + grade.grade + ")")) {
+                // ANTI-PATTERN: Creating and submitting form dynamically via JavaScript
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/grades';
+                
+                var actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = 'delete';
+                form.appendChild(actionInput);
+                
+                var idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'delete_id';
+                idInput.value = gradeId;
+                form.appendChild(idInput);
+                
+                document.body.appendChild(form);
+                form.submit();
             }
         }
         
